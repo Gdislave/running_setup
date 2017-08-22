@@ -25,7 +25,7 @@ int main(int argc, char **argv)
   geometry_msgs::Twist cmd_vel;
   /*
         Maximal values for steering and motor level
-        in accordance with vehicle specs; bias term for errors in steering
+        according to vehicle specs; bias term for errors in steering
   */
   const float max_motor_level = 20.f;
   const float min_motor_level = -20.f;
