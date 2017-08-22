@@ -8,6 +8,7 @@ set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  pses_basis
 )
 
 ## System dependencies are found with CMake's conventions
