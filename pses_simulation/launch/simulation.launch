@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <launch>
 	<master auto="start"/>
 
@@ -11,7 +10,7 @@
 	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
 	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
 	<!-- Run the necessary nodes to bring up the car -->
-        <node pkg="pses_simulation" type="simulation_node" name="simulation_control" output="screen"/>
+    <node pkg="pses_simulation" type="simulation_node" name="simulation_control" output="screen"/>
 	<node pkg="pses_simulation" type="scan_node" name="simulation_scan" />
 	<node pkg="pses_simulation" type="usrange_node" name="simulation_us"/>
 	<!-- Run the map server -->
