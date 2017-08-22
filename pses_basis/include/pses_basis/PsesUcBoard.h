@@ -101,6 +101,7 @@ private:
 								int steeringLevel;
 								bool kinectOn;
 								bool usOn;
+								ros::Time lastRequest;
 
 								void connect(const unsigned int serialTimeout);
 								void send(const std::string& msg);
