@@ -9,8 +9,9 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   pses_basis
+  cv_bridge
 )
-
+find_package(OpenCV REQUIRED)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -130,6 +131,7 @@ include_directories(
 
 ## Declare a C++ executable
 add_executable(segfault_nav_ctrl_node src/segfault_nav_ctrl.cpp)
+add_executable(kinect_filter src/kinect_filter.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -139,6 +141,7 @@ add_dependencies(segfault_nav_ctrl_node src/segfault_nav_ctrl.cpp)
 target_link_libraries(segfault_nav_ctrl_node
    ${catkin_LIBRARIES}
 )
+target_link_libraries(kinect_filter ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
 #############
 ## Install ##
