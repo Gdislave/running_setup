@@ -36,7 +36,7 @@ int main (int argc, char **argv){
 		// send Rectangle
 		rectangle.length = i;
 		rectangle.width = i;
-		adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "t_rectangle_JUST WROTE THIS MESSAGE BOOOOYYYY");
+		adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "t_rectangle");
 		loop_rate.sleep();
 	}	
 	return 1;
