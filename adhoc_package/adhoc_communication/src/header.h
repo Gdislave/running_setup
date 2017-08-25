@@ -742,7 +742,7 @@ void initParams(ros::NodeHandle* n)
     /*		NAME						VARIABLE					DEFAULT VALUE*/
 
     //n->param("interface", interface_as_string, std::string("wlan0"));
-    n->param("interface", interface_as_string, std::string("wlp2s0"));
+    n->param("interface", interface_as_string, std::string("wlp3s0"));
     n->param("mac", mac_as_string, std::string(""));
     n->param("num_link_retrans", num_link_retrans, 10);
     n->param("num_e2e_retrans", num_e2e_retrans, 10);
