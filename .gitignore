@@ -4,3 +4,5 @@ iai_kinect2/
 ._*
 docs/
 LICENSE
+./adhoc_package/adhoc_communication/scripts/launchCars_laptop.sh
+adhoc_package/adhoc_communication/src/header.h
