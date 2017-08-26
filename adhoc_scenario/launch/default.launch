@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+<group ns="adhoc_scenario_params">
+	<node pkg="adhoc_scenario" name="alert_message" type="alert_message">
+		<param name="loop"  type="int" value="10" />
+		<param name="dst_car" type="str" value="pses-car6" />
+		<param name="mode" value="0" />
+		<param name="src_car" type="str" value="pses-car2" />
+    </node>
+</group>
+
+</launch>
