@@ -18,7 +18,6 @@ PsesUcBoard::~PsesUcBoard() {
 								delete displayStack;
 }
 void PsesUcBoard::initUcBoard(const unsigned int serialTimeout){
-								lastRequest = ros::Time::now();
 								connect(serialTimeout);
 								setSteering(0);
 								setMotor(0);
@@ -89,10 +88,8 @@ void PsesUcBoard::setSteering(const int level){
 								std::string command = "!STEER " + value;
 								std::string answer;
 								ros::Time start = ros::Time::now();
-								do {							//ros::Time guard = ros::Time::now();
-																//while((ros::Time::now()-guard).toSec()<=0.006);
+								do {
 																sendRequest(command, answer);
-								ROS_INFO_STREAM("STEERING CMD:  "<<answer);
 								} while(answer.find(value)==-1 && (ros::Time::now()-start).toSec()<=0.1);
 
 								if(answer.find(value)==-1) {
@@ -122,8 +119,6 @@ void PsesUcBoard::setMotor(const int level){
 								std::string answer;
 								ros::Time start = ros::Time::now();
 								do {
-																//ros::Time guard = ros::Time::now();
-																//while((ros::Time::now()-guard).toSec()<=0.006);
 																sendRequest(command, answer);
 
 								} while(answer.find(value)==-1 && (ros::Time::now()-start).toSec()<=0.1);
@@ -242,9 +237,7 @@ void PsesUcBoard::queryCarID(){
 								do {
 																sendRequest(command, answer);
 																try{
-int idx = answer.find(":");
-																								answer = answer.substr(idx+1, answer.size());
-ROS_INFO_STREAM("CAR ID:  "<<answer);
+																								answer = answer.substr(1, answer.size()-1);
 																								carID = std::stoi(answer);
 																}catch(std::exception& e) {
 																								carID = -1;
@@ -261,8 +254,7 @@ void PsesUcBoard::queryFirmwareVersion(){
 								ros::Time start = ros::Time::now();
 								do {
 																sendRequest(command, answer);
-																int idx = answer.find(":");
-																answer = answer.substr(idx+1, answer.size());
+																answer = answer.substr(1, answer.size()-1);
 								} while(answer.size()<=0 && (ros::Time::now()-start).toSec()<=0.1);
 								if(answer.size()<=0) {
 																throw UcBoardException(Board::REQUEST_NO_FWV);
@@ -294,28 +286,21 @@ void PsesUcBoard::connect(const unsigned int serialTimeout){
 								}
 }
 
-
-
 void PsesUcBoard::sendRequest(const std::string& req, std::string& answer){
 								if(!connected) {
 																throw UcBoardException(Board::CONNECTION_NOT_ESTABLISHED);
 								}
-								while((ros::Time::now()-lastRequest).toSec()<=0.005);
 								send(req);
-								lastRequest = ros::Time::now();
 								ros::Time start = ros::Time::now();
 								do {
 																readInputBuffer();
 																responseStack->pop(answer);
 
 								} while(answer.size()==0 && (ros::Time::now()-start).toSec()<=0.05);
-								ROS_INFO_STREAM("Start: " << answer);
 
 								if(answer.size()!=0) {
-																int idx = answer.find("\x03");
-																answer = answer.substr(0,idx);
+																answer = answer.substr(1,answer.size()-2);
 								}
-								ROS_INFO_STREAM("End: " << answer);
 }
 
 void PsesUcBoard::readInputBuffer(){
