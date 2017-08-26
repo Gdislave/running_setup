@@ -12,13 +12,14 @@
 #include <fstream>
 #include <string> 
 #include <sys/time.h>
+#include <tf/transform_listener.h>
 
 
-adhoc_customize::Rectangle rectangle;
+//adhoc_customize::Rectangle rectangle;
 adhoc_communication::MmRobotPosition current_pos;
 //const nav_msgs::Odometry::ConstPtr& msg;
-nav_msgs::Odometry odom;
-
+//nav_msgs::Odometry odom;
+//nav_msgs::Odometry::
 //Callback functions
 /*
 
@@ -31,7 +32,9 @@ void odom_callback(const nav_msgs::Odometry::ConstPtr& odom_msg, nav_msgs::Odome
 int main (int argc, char **argv){
 	
 	ros::init(argc, argv, "alert_message");
-	ros::NodeHandle nh; 
+  ros::NodeHandle nh;
+
+  tf::TransformListener listener;
 
 	// get Parameters and print INFO
 	int loop;
@@ -45,20 +48,41 @@ int main (int argc, char **argv){
 	ROS_INFO("loop [%d]; Dest: [%s] ; Source: [%s]", loop, dst_car.c_str(), src_car.c_str());
 	current_pos.src_robot = src_car; 
 	
-	ros::Rate loop_rate(1);
+  ros::Rate loop_rate(10);
 
 
 	int i = 0;
 
+  tf::StampedTransform transform;
+  geometry_msgs::Quaternion quaternion;
+
 	while(ros::ok() && i<loop){
 		i++;
+
+    try
+        {
+    listener.lookupTransform("/map","/base_footprint",ros::Time(0), transform);
+    ROS_INFO("Got a transform! x = %f, y = %f",transform.getOrigin().x(),transform.getOrigin().y());
+    //current_pos.position.pose.position.x = transform.getOrigin().x;
+    //current_pos.position.pose.position.y = transform.getOrigin().y;
+    //current_pos.position.pose.position.z = transform.getOrigin().z;
+    tf::quaternionTFToMsg(transform.getRotation(), quaternion);
+    current_pos.position.pose.orientation = quaternion;
+    adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
+
+    }
+    catch (tf::TransformException ex)
+    {
+          ROS_ERROR("Nope! %s", ex.what());
+    }
 		// send Rectangle
-		rectangle.length = i;
-		rectangle.width = i;
-		current_pos.position.pose.position.x = odom.pose.;
-		adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "t_rectangle");
-		adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
-		loop_rate.sleep();
+    //rectangle.length = i;
+    //rectangle.width = i;
+    //current_pos.position.pose.position.x = odom.pose.pose.position.x;
+    //adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "t_rectangle");
+   // ROS_INFO("position [%d]", odom.pose.pose.position.x);
+
+    loop_rate.sleep();
 	}	
 	return 1;
 }

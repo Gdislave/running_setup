@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
 	message_generation
 	adhoc_customize
 	adhoc_communication
+	tf
 )
 
 ## System dependencies are found with CMake's conventions
