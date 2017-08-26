@@ -742,6 +742,7 @@ void initParams(ros::NodeHandle* n)
     /*		NAME						VARIABLE					DEFAULT VALUE*/
 
     //n->param("interface", interface_as_string, std::string("wlan0"));
+    //n->param("interface", interface_as_string, std::string("wlp3s0"));
     n->param("interface", interface_as_string, std::string("wlp2s0"));
     n->param("mac", mac_as_string, std::string(""));
     n->param("num_link_retrans", num_link_retrans, 10);
@@ -1165,8 +1166,6 @@ void joinAllMcGroups()
     /*
    ros::Duration(2, 0).sleep();
    for (int c = 3; c < 4; c++) {//robots_in_simulation
-
-
        std::string g_name = "mc_robot_" + convertInt(c);
        McTree* mc_t = mc_handler.getMcGroup(&g_name);
        if(mc_t == NULL )
