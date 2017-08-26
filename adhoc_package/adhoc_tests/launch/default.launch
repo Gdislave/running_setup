@@ -4,7 +4,7 @@
 	<node pkg="adhoc_tests" name="sender" type="sender">
 	<param name="loop" value="1" />
 	<param name="strLen" value="1" />
-	<param name="dst_robot" value="pses-car7" />
+	<param name="dst_robot" value="pses-car6" />
 	<param name="mode" value="0" />
     </node>
 </group>

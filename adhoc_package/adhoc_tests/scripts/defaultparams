@@ -3,4 +3,4 @@ rosparam set /sender/rate 10
 rosparam set /sender/sleep 1
 rosparam set /sender/strLen 1
 rosparam set /sender/mode 5
-rosparam set /sender/dst_car "pses-car2"
+rosparam set /sender/dst_car "pses-car6"
