@@ -7,6 +7,7 @@
 #include "adhoc_communication/RecvString.h"
 #include <adhoc_tests/FilenameService.h>
 #include "adhoc_communication/MmRobotPosition.h"
+#include "nav_msgs/Odometry.h"
 #include <iostream> 
 #include <fstream>
 #include <string> 
@@ -15,7 +16,17 @@
 
 adhoc_customize::Rectangle rectangle;
 adhoc_communication::MmRobotPosition current_pos;
+//const nav_msgs::Odometry::ConstPtr& msg;
+nav_msgs::Odometry odom;
 
+//Callback functions
+/*
+
+void odom_callback(const nav_msgs::Odometry::ConstPtr& odom_msg, nav_msgs::Odometry* odom){
+        *odom = *odom_msg;
+}
+
+*/
 
 int main (int argc, char **argv){
 	
@@ -44,7 +55,7 @@ int main (int argc, char **argv){
 		// send Rectangle
 		rectangle.length = i;
 		rectangle.width = i;
-		current_pos.position.pose.position.x = 10.0;
+		current_pos.position.pose.position.x = odom.pose.;
 		adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "t_rectangle");
 		adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
 		loop_rate.sleep();
