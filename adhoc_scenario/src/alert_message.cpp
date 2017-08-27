@@ -63,7 +63,7 @@ int main (int argc, char **argv){
         {
     listener.lookupTransform("/map","/base_footprint",ros::Time(0), transform);
     ROS_INFO("Got a transform! x = %f, y = %f",transform.getOrigin().x(),transform.getOrigin().y());
-    //current_pos.position.pose.position.x = transform.getOrigin().x;
+    current_pos.position.pose.position.x = transform.getOrigin().x();
     //current_pos.position.pose.position.y = transform.getOrigin().y;
     //current_pos.position.pose.position.z = transform.getOrigin().z;
     tf::quaternionTFToMsg(transform.getRotation(), quaternion);
