@@ -21,13 +21,13 @@ int main(int argc, char** argv){
 	goal.target_pose.header.frame_id = "base_footprint";//"was base_link 
 	goal.target_pose.header.stamp = ros::Time::now();
 
-	goal.target_pose.pose.position.x = 27.756;
-	goal.target_pose.pose.position.y = -3.543;
+	goal.target_pose.pose.position.x = 10.0;
+	goal.target_pose.pose.position.y = 1.f;
 	goal.target_pose.pose.position.z = 0.f;
 	goal.target_pose.pose.orientation.x = 0.f;
 	goal.target_pose.pose.orientation.y = 0.f;
-	goal.target_pose.pose.orientation.z = -0.774;
-	goal.target_pose.pose.orientation.w = 0.633;
+	goal.target_pose.pose.orientation.z = 0.f;
+	goal.target_pose.pose.orientation.w = 0.f;
 
 	ROS_INFO("Sending goal");
 	ac.sendGoal(goal);
