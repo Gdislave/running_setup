@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+	<arg name="rviz" default="false" />
+
+	<!-- Set the robot model -->
+	<param name="robot_description" textfile="$(find pses_simulation)/data/urdf_model/apollo_13.urdf"/>
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+
+	<!-- Run the necessary nodes to bring up the car -->
+	<include file="$(find pses_basis)/launch/pses_basis.launch"/>
+
+	<!-- Convert the kinect point cloud to a laserscan message -->
+	<node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" >
+		<remap from="image" to="/apollo_13/depth" />
+		<remap from="camera_info" to="/kinect2/sd/camera_info" />
+		<param name="output_frame_id" value="base_laser" />
+		<param name="range_max" value="10.0" />
+		<param name="range_min" value="0.80" />
+	</node>
+
+	<!-- Median Filter for the depth image -->
+	<node pkg="pses_navigation" type="kinect2_filter" name="kinect2_filter" />	
+
+	<!-- Show the Rviz visualization-->
+    <group if="$(arg rviz)">
+		<include file="$(find pses_navigation)/launch/rviz_display.launch" />
+	</group>
+
+</launch>

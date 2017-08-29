@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 2.8.3)
 project(scenario_handler)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+ add_compile_options(-std=c++11)
+#set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -10,6 +11,12 @@ project(scenario_handler)
 find_package(catkin REQUIRED
   roscpp
   std_msgs
+  genmsg
+  adhoc_customize
+  adhoc_communication
+  actionlib
+  move_base_msgs
+  tf
   )
 
 ## System dependencies are found with CMake's conventions
@@ -134,6 +141,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/scenario_handler_node.cpp)
 #add_executable(scenario_handler src/adhoc_listener.cpp)
+add_executable(scenario_handler src/adhoc_listener.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -145,11 +153,16 @@ include_directories(
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 #add_dependencies(scenario_handler src/adhoc_listener.cpp)
+#add_dependencies(scenario_handler src/adhoc_listener.cpp)
+
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(scenario_handler
+   ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
