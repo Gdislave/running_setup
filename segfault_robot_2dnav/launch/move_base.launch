@@ -7,8 +7,8 @@
         <remap from="camera_info" to="depth_filtered/camera_info"/>
         <param name="output_frame_id" value="base_laser"/>
         <param name="scan_height" value="1"/>
-        <param name="range_min" value="2.0"/>
-        <param name="range_max" value="7.0"/>
+        <param name="range_min" value="0.80"/>
+        <param name="range_max" value="10.0"/>
     </node>
 
   <!-- Run the map server -->
@@ -21,18 +21,18 @@
 <include file="$(find segfault_robot_2dnav)/launch/amcl.launch"/>
 
 
-  <!-- *************** Navigation ************* Hidden Message:Max mach Kommentare für andere -->
+  <!-- *************** Navigation ************* -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <!-- Planners -->
 		<!-- param name="base_local_planner" value="pose_follower/PoseFollower" / -->
 		<param name="base_global_planner" value="global_planner/GlobalPlanner" />
 		<param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
 		<!-- Costmap parameters -->
-		<rosparam file="$(find pses_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap"/>
-		<rosparam file="$(find pses_navigation)/config/costmap_common_params.yaml" command="load" ns="local_costmap"/>
-		<rosparam file="$(find pses_navigation)/config/local_costmap_params.yaml" command="load"/>
-		<rosparam file="$(find pses_navigation)/config/global_costmap_params.yaml" command="load"/>
-		<rosparam file="$(find pses_navigation)/config/teb_local_planner_params.yaml" command="load"/>
+		<rosparam file="$(find segfault_robot_2dnav)/config/costmap_common_params.yaml" command="load" ns="global_costmap"/>
+		<rosparam file="$(find segfault_robot_2dnav)/config/costmap_common_params.yaml" command="load" ns="local_costmap"/>
+		<rosparam file="$(find segfault_robot_2dnav)/config/local_costmap_params.yaml" command="load"/>
+		<rosparam file="$(find segfault_robot_2dnav)/config/global_costmap_params.yaml" command="load"/>
+		<rosparam file="$(find segfault_robot_2dnav)/config/teb_local_planner_params.yaml" command="load"/>
 
  </node>
 
