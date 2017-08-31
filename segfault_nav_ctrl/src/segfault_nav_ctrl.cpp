@@ -37,6 +37,7 @@ int main(int argc, char **argv)
   double velCmd = 0;
   double yawCmd = 0;
   float BoundCheck = 0;
+  int max_rcd_val_motor_cmd = 0;
   /*
         Polynomial Interpolation for right and left steering direction
           --> maps from angles in deg to steering_lvl:
@@ -49,8 +50,8 @@ int main(int argc, char **argv)
         4th order | 3rd order | 2nd order | 1st order | 0th order
         -0.0003     0.0102      -0.1148     -1.0710     -0.0381
   */
-  float polyL4[] = {0.0010, -0.0355, 0.3800, 0.3266, 0.0071};
-  float polyR4[] = {-0.0003, 0.0102, -0.1148, -1.0710, -0.0381};
+  //float polyL4[] = {0.0010, -0.0355, 0.3800, 0.3266, 0.0071};
+  //float polyR4[] = {-0.0003, 0.0102, -0.1148, -1.0710, -0.0381};
 
   //Publisher for cmd.steering_level and cmd.motor_level
   ros::Publisher commands_pub =
@@ -66,6 +67,22 @@ int main(int argc, char **argv)
         //Gets linear and angular control velocities from navigation stack
         velCmd = (double)cmd_vel.linear.x;
         yawCmd = (double)cmd_vel.angular.z;
+
+
+        if(max_rcd_val_motor_cmd < abs(cmd_vel.linear.x))
+        {
+        	ROS_INFO("we've got a new value");
+        	max_rcd_val_motor_cmd = abs(cmd_vel.linear.x);
+        };
+
+        /*
+        max_rcd_val_motor_cmd =
+        (max_rcd_val_motor_cmd > abs(cmd_vel.linear.x)) ? 
+        (max_rcd_val_motor_cmd = abs(max_rcd_val_motor_cmd);
+        	printf("we've got a new value")) :
+        	 (max_rcd_val_motor_cmd = max_rcd_val_motor_cmd) ;
+        */
+
         /*
               Approx. max. vel.: 2 metres/second @ motor_level: 20
               thus metric velocity values linear with motor Level
@@ -77,13 +94,16 @@ int main(int argc, char **argv)
 
         cmd.motor_level =
         (speed_level < min_motor_level) ? (min_motor_level) : (speed_level);
+
         /*
               Check if min. motor_level to overcome friction is reached;
               otherwise set motor_level to the necessary value.
               Also checks if maxima of motor level are exceeded.
         */
-      	if((cmd.motor_level < 6) && (cmd.motor_level > 0)){
-      	    	cmd.motor_level = 5;
+
+        
+      	if((cmd.motor_level < 7) && (cmd.motor_level > 0)){
+      	    	cmd.motor_level = 6;
         }
       	if((cmd.motor_level > -12) && (cmd.motor_level < 0)){
       	    	cmd.motor_level = -12;
@@ -99,14 +119,17 @@ int main(int argc, char **argv)
         	cmd.steering_level = -50;
         }else{
         	cmd.steering_level = BoundCheck;
-			    cmd.steering_level -= 4;
+			    //cmd.steering_level -= 4; bearingplay from former vehicle
         }
-        /*
+
+        /*	  Commented in assumption that teblocal planner already uses some controller
+        	  which is able to  consider past behavior
               Steers to the right if angle is negative otherwise to the left.
-              Respective polynomials are used to translate steering angles
-              in degree to steering level. Also checks if maxima of steering
-              are exceeded.
+              Checks if maxima of steering are exceeded.
         */
+        /*
+        ROS_INFO(" CURRENT STATE cmd_vel:yaw in DEGREES [%f]", yawCmd);
+        ROS_INFO("Before polynom functionSteering_Level: [%d]", cmd.steering_level);
         if( yawCmd < 0 ){
             BoundCheck =
                 polyR4[0]*pow(fabs(yawCmd),4)+polyR4[1]*pow(fabs(yawCmd),3)
@@ -127,14 +150,16 @@ int main(int argc, char **argv)
                 cmd.steering_level = BoundCheck;
             }
         }
-        /*
-            Outputs velocity and yaw commands and their Respective
-            motor_level and steering_level.
         */
+        /*INFOBOX
+        ROS_INFO("Right before publishing without polynimial function Steering_Level: [%d]", cmd.steering_level);
+
         ROS_INFO("cmd_vel:velocity: [%f]; cmd_vel:yaw: [%f]",
                                                                  velCmd,yawCmd);
         ROS_INFO("Motor Level: [%d]; Steering_Level: [%d]",
                                            cmd.motor_level, cmd.steering_level);
+        */
+
         //Publish motor_level and steering_level
         commands_pub.publish(cmd);
         ros::spinOnce();
