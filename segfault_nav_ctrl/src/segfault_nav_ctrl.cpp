@@ -68,12 +68,13 @@ int main(int argc, char **argv)
         velCmd = (double)cmd_vel.linear.x;
         yawCmd = (double)cmd_vel.angular.z;
 
-
+        /*
         if(max_rcd_val_motor_cmd < abs(cmd_vel.linear.x))
         {
         	ROS_INFO("we've got a new value");
         	max_rcd_val_motor_cmd = abs(cmd_vel.linear.x);
         };
+		*/
 
         /*
         max_rcd_val_motor_cmd =
