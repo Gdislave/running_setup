@@ -1,7 +1,7 @@
 TebLocalPlannerROS:
-  max_vel_x: 1.0 #actually car is capable of 2
+  max_vel_x: 2.0 #actually car is capable of 2
   max_vel_theta: 0.3
-  max_vel_x_backwards: 0.35
+  max_vel_x_backwards: 1.0
   wheelbase: 0.25
   cmd_angle_instead_rotvel: true
   footprint_model/type: polygon

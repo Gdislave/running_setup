@@ -18,7 +18,7 @@ CarModel::CarModel(const double dAxis, const ros::Time& time, const double vMax,
 								velocity = 0;
 								distance = 0;
 								timeStep = 0;
-								pose=std::vector<double>(3,0);
+                pose=std::vector<double>(3,0);
 								angularVelocity = 0;
 
 }
