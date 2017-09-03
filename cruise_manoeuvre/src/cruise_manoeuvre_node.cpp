@@ -2,6 +2,7 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <tf/transform_listener.h>
+#include "std_msgs/String.h"
 
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
@@ -29,13 +30,15 @@ int main(int argc, char** argv){
     {-0.019, 8.449, 0, 0, 0, 0,  1.f},
     {11.0, 8.523,   0, 0, 0, 0,    1.000},
     {12.365, -0.937, 0, 0, 0, -0.696,  0.718},
-    {13.935, -7.436,  0, 0, 0, 0.028, 1.000},//
+    {14.535, -7.436,  0, 0, 0, 0.028, 1.000},//
     {26.915, -6.936, 0, 0, 0, 0.028,  1.000},
-    {27.627, 1.355, 0, 0, 0, 0.735,  0.678},
+    {27.227, 0.855, 0, 0, 0, 0.735,  0.678},
     {14.0, 0.491, 0, 0, 0, 1.000,  -0.015},//
     {12.689, 5.691, 0, 0, 0, 0.722,  0.692},
     {1.066, 8.531, 0, 0, 0, 1.000,  -0.015},
   };
+
+
 
   int goal_tracker = 0;
   //tell the action client that we want to spin a thread by default
