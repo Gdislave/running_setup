@@ -71,11 +71,12 @@ int main(int argc, char** argv){
       subscribe<scenario_handler::adhoc_reaction>
       ("adhoc_rct_message", 10, std::bind(adhoc_cmd_callback, std::placeholders::_1, &rct_obj));
 
-
-
+  //initialmode
+  switchGoal(goal, goal_tracker, goalList);
+  ac.sendGoal(goal);
 
 while(ros::ok()){
-  switchGoal(goal, goal_tracker, goalList);
+
 
 
   //ROS_INFO("Sending Goal [%d]!", goal_tracker);
@@ -83,6 +84,7 @@ while(ros::ok()){
 
   if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){
     ac.sendGoal(goal);
+    switchGoal(goal, goal_tracker, goalList);
   }
   //ac.waitForResult(); selfmade including check for new commands from publisher
   if(rct_obj.message_type == "SOS")
