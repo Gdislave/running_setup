@@ -20,7 +20,7 @@ void adhoc_cmd_callback(const scenario_handler::adhoc_reaction::ConstPtr &adhoc_
             adhoc_reaction->position.z = adhoc_reaction_msg->position.z;
   }
 
-void switchGoal(move_base_msgs::MoveBaseGoal &goal,int &counter ,double array[9][7]){
+void switchGoal(move_base_msgs::MoveBaseGoal &goal,int &counter ,double array_of_goals[9][7]){
     //Return from function if 4th goal has already been reached
     if(counter > 6)
     {counter = 3;};
@@ -29,10 +29,10 @@ void switchGoal(move_base_msgs::MoveBaseGoal &goal,int &counter ,double array[9]
     //Write the new goal to the goal variable.
     //goal.target_pose.header.frame_id = "map";
     goal.target_pose.header.stamp = ros::Time::now();
-    goal.target_pose.pose.position.x    = array[counter][0];
-    goal.target_pose.pose.position.y    = array[counter][1];
-    goal.target_pose.pose.orientation.z = array[counter][5];
-    goal.target_pose.pose.orientation.w = array[counter][6];
+    goal.target_pose.pose.position.x    = array_of_goals[counter][0];
+    goal.target_pose.pose.position.y    = array_of_goals[counter][1];
+    goal.target_pose.pose.orientation.z = array_of_goals[counter][5];
+    goal.target_pose.pose.orientation.w = array_of_goals[counter][6];
     ROS_INFO("just set %d goal", counter);
     counter++;
 }
@@ -74,20 +74,19 @@ int main(int argc, char** argv){
 
 
 
-  while(ros::ok()){
+while(ros::ok()){
   switchGoal(goal, goal_tracker, goalList);
 
 
   //ROS_INFO("Sending Goal [%d]!", goal_tracker);
   //Send goal to the action server and increment goal count by one.
 
-
-  ac.sendGoal(goal);
-
+  if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){
+    ac.sendGoal(goal);
+  }
   //ac.waitForResult(); selfmade including check for new commands from publisher
-  while(!(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)){
-    if(rct_obj.message_type == "SOS")
-    {
+  if(rct_obj.message_type == "SOS")
+  {
     ac.cancelAllGoals();
     //Setting emergency goal
     goal.target_pose.header.stamp = ros::Time::now();
@@ -96,9 +95,8 @@ int main(int argc, char** argv){
     ac.sendGoal(goal);
     ROS_INFO("received emergencycall from %s and heading its direction , every other command will be ignored :)", rct_obj.source.c_str());
     ac.waitForResult();
-    }
-    ros::spinOnce();
   }
+  ros::spinOnce();
 
   /*
   if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
@@ -106,10 +104,6 @@ int main(int argc, char** argv){
   else
     ROS_INFO("The base failed to move forward");
   */
-
-
-  ros::spinOnce();
   }
-  ros::spin();
   return 0;
 }
