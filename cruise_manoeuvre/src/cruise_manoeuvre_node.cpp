@@ -66,9 +66,13 @@ int main(int argc, char** argv){
   }
 
   geometry_msgs::PoseWithCovarianceStamped initial_pose;
+  initial_pose.header.frame_id = "map";
   initial_pose.pose.pose.position.x = -0.1;
   initial_pose.pose.pose.position.y = 8.449;
   initial_pose.pose.pose.position.z = 0.0;
+  ros::Publisher pose_pub =
+  nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose", 10);
+
 
 
   move_base_msgs::MoveBaseGoal goal;
@@ -78,6 +82,8 @@ int main(int argc, char** argv){
       ("adhoc_rct_message", 10, std::bind(adhoc_cmd_callback, std::placeholders::_1, &rct_obj));
 
 
+
+  pose_pub.publish(initial_pose);
   ros::Duration(30,0).sleep();
   //initialmode
 
