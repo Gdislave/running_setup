@@ -4,7 +4,7 @@
 #include <tf/transform_listener.h>
 #include "std_msgs/String.h"
 #include "scenario_handler/adhoc_reaction.h"
-
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -65,13 +65,22 @@ int main(int argc, char** argv){
     ROS_INFO("Waiting for the move_base action server to come up");
   }
 
+  geometry_msgs::PoseWithCovarianceStamped initial_pose;
+  initial_pose.pose.pose.position.x = -0.1;
+  initial_pose.pose.pose.position.y = 8.449;
+  initial_pose.pose.pose.position.z = 0.0;
+
+
   move_base_msgs::MoveBaseGoal goal;
   goal.target_pose.header.frame_id = "map";//"was base_link
   ros::Subscriber reaction_sub = nh.
       subscribe<scenario_handler::adhoc_reaction>
       ("adhoc_rct_message", 10, std::bind(adhoc_cmd_callback, std::placeholders::_1, &rct_obj));
 
+
+  ros::Duration(30,0).sleep();
   //initialmode
+
   switchGoal(goal, goal_tracker, goalList);
   ac.sendGoal(goal);
 
