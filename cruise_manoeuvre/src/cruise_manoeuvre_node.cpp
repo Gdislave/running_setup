@@ -37,6 +37,19 @@ void switchGoal(move_base_msgs::MoveBaseGoal &goal,int &counter ,double array_of
     counter++;
 }
 
+void setInitialPosition(geometry_msgs::PoseWithCovarianceStamped &pose_obj){
+  pose_obj.header.stamp = ros::Time::now();
+  pose_obj.header.frame_id = "map";
+  pose_obj.pose.pose.position.x = -0.1;
+  pose_obj.pose.pose.position.y = 8.449;
+  pose_obj.pose.pose.position.z = 0.0;
+  pose_obj.pose.pose.orientation.x = 0.0;
+  pose_obj.pose.pose.orientation.y = 0.0;
+  pose_obj.pose.pose.orientation.z = 0.0;
+  pose_obj.pose.pose.orientation.w = 1.0;
+}
+
+
 int main(int argc, char** argv){
   ros::init(argc, argv, "simple_navigation_goals");
   ros::NodeHandle nh;
@@ -66,10 +79,6 @@ int main(int argc, char** argv){
   }
 
   geometry_msgs::PoseWithCovarianceStamped initial_pose;
-  initial_pose.header.frame_id = "map";
-  initial_pose.pose.pose.position.x = -0.1;
-  initial_pose.pose.pose.position.y = 8.449;
-  initial_pose.pose.pose.position.z = 0.0;
   ros::Publisher pose_pub =
   nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose", 10);
 
@@ -88,6 +97,7 @@ int main(int argc, char** argv){
   //eleganter über eine while(as long as the message im publishing is not initial pose ){keep on publishin}
   //need bool, is_published, and subscriber from intialpose and compare my pose with received.
   //initialpose needs some kind if time to be able to receive information. not really comprehensible
+  setInitialPosition(initial_pose);
   pose_pub.publish(initial_pose);
 
 
