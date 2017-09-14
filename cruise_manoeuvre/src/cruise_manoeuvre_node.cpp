@@ -81,17 +81,24 @@ int main(int argc, char** argv){
       subscribe<scenario_handler::adhoc_reaction>
       ("adhoc_rct_message", 10, std::bind(adhoc_cmd_callback, std::placeholders::_1, &rct_obj));
 
+  double weird_pub_counter = 0;
 
 
-  pose_pub.publish(initial_pose);
   ros::Duration(30,0).sleep();
-  //initialmode
+  //eleganter über eine while(as long as the message im publishing is not initial pose ){keep on publishin}
+  //need bool, is_published, and subscriber from intialpose and compare my pose with received.
+  pose_pub.publish(initial_pose);
+
+
+//initialmode
 
   switchGoal(goal, goal_tracker, goalList);
   ac.sendGoal(goal);
+  //pose_pub.publish(initial_pose);
+  //if(weird_pub_counter <= 100){ pose_pub.publish(initial_pose); weird_pub_counter++;};
+
 
 while(ros::ok()){
-
 
 
   //ROS_INFO("Sending Goal [%d]!", goal_tracker);
