@@ -87,6 +87,7 @@ int main(int argc, char** argv){
   ros::Duration(30,0).sleep();
   //eleganter über eine while(as long as the message im publishing is not initial pose ){keep on publishin}
   //need bool, is_published, and subscriber from intialpose and compare my pose with received.
+  //initialpose needs some kind if time to be able to receive information. not really comprehensible
   pose_pub.publish(initial_pose);
 
 
