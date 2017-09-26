@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <launch>
   <master auto="start"/>
     <node name="kinect_filter" pkg="segfault_nav_ctrl" type="kinect_filter"/>
@@ -6,7 +7,7 @@
         <remap from="image" to="depth_filtered"/>
         <remap from="camera_info" to="depth_filtered/camera_info"/>
         <param name="output_frame_id" value="base_laser"/>
-        <param name="scan_height" value="1"/>
+        <param name="scan_height" value="10"/><!--AnzahlanReihen zum erzeugen des Scans-->
         <param name="range_min" value="0.80"/>
         <param name="range_max" value="10.0"/>
     </node>
@@ -14,6 +15,7 @@
   <!-- Run the map server -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(find segfault_robot_2dnav)/data/Maps/FG_ES_RS_map/map.yaml"/>
 <!-- use this node only in real scenario not in simulation -->
+ <!--SEEMS TO HAVE LOST THE ISSUE-->
  <node pkg="tf" type="static_transform_publisher" name ="laser_broadcaster" args="0 0 0.16 0 0 0 1 base_footprint base_laser 10" />
 
  <!--node pkg="tf" type="static_transform_publisher" name ="footprint_broadcaster" args="0 0 0 0 0 0 1 map odom 10" /-->
@@ -35,5 +37,10 @@
 		<rosparam file="$(find segfault_robot_2dnav)/config/teb_local_planner_params.yaml" command="load"/>
 
  </node>
+
+    <!-- Show the Rviz visualization-->
+    <!--group if="$(arg rviz)">
+    <include file="$(find segfault_robot_2dnav)/launch/rviz_display.launch" />
+  </group-->
 
 </launch>
