@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 #include "adhoc_customize/include.h"
 #include "adhoc_communication/functions.h"
-
+#include "adhoc_communication/MmRobotPosition.h"
 
 //#include "ros/ros.h"
 //#include "ros/topic.h"
@@ -14,7 +14,8 @@
 //#include <string>
 //#include <sys/time.h>
 
-adhoc_customize::Rectangle rectangle;
+adhoc_communication::MmRobotPosition current_pos;
+//adhoc_customize::Rectangle rectangle;
 
 int main (int argc, char **argv){
 	
@@ -24,6 +25,7 @@ int main (int argc, char **argv){
 
   rectangle.length = 10;
   rectangle.width  = 20;
+  std::string dst_car = "pses-car6";
 
 
   ROS_INFO("length [%d]; width: [%d]", rectangle.length , rectangle.width);
@@ -35,13 +37,24 @@ int main (int argc, char **argv){
 
 
   ros::Duration(5,0).sleep();
+  current_pos.position.pose.position.x = 0;
+  current_pos.position.pose.position.y = 0;
+  current_pos.position.pose.position.z = 0;
+
+  current_pos.pose.pose.orientation.x = 0.0;
+  current_pos.pose.pose.orientation.y = 0.0;
+  current_pos.pose.pose.orientation.z = 0.0;
+  current_pos.pose.pose.orientation.w = 1.0;
+  
   while(ros::ok() && i<loop){
     i++;
 
-  adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, "pses-car6", "mambo-jambo");
+  //adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "mambo-jambo");
+  adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
 
-  ros::spinOnce();
+  //ros::spinOnce();
+  loop_rate.sleep();
   };
-
+  return 1;
 
 }
