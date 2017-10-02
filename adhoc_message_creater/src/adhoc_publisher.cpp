@@ -33,6 +33,7 @@
 //#include <sys/time.h>
 
 adhoc_communication::MmRobotPosition current_pos;
+adhoc_customize::Car2Car CarMessageTest;
 //adhoc_customize::Rectangle rectangle;
 
 int main (int argc, char **argv){
@@ -67,11 +68,20 @@ int main (int argc, char **argv){
   current_pos.position.pose.orientation.z = 0.0;
   current_pos.position.pose.orientation.w = 1.0;
 
+
+  //Settings CarMessageTest attributes:
+  CarMessageTest.src_car = std::string("pses-car2");
+  CarMessageTest.myFirstMessage = std::string("ready");
+
+
+
+
   while(ros::ok() && i<loop){
     i++;
 
   //adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "mambo-jambo");
-  adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
+  //adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
+  adhoc_communication::sendMessage(CarMessageTest, FRAME_DATA_TYPE_CAR2CAR, dst_car, "Car2Car");
 
   //ros::spinOnce();
   loop_rate.sleep();
