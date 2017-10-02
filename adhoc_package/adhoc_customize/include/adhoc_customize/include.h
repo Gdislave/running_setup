@@ -8,16 +8,22 @@
 #define FRAME_DATA_TYPE_STUDENT 0xf3
 #define FRAME_DATA_TYPE_TIME 0xf4
 #define FRAME_DATA_TYPE_STRING_W_TIME 0xf5
+#define FRAME_DATA_TYPE_CAR2CAR 0xf6
+
+
 #include "adhoc_customize/Rectangle.h"
 #include "adhoc_customize/RecvTime.h"
 #include "adhoc_customize/Student.h"
 //#include "adhoc_messages/Square.h"
 #include "adhoc_customize/StringWTime.h"
+#include "adhoc_customize/Car2Car.h"
 
 #include "std_msgs/String.h"
 #include "std_msgs/Time.h"
 
 #ifdef COMM
+
+
 void publishCustomMessage(std::string payload, std::string topic, uint8_t data_type, std::string src_host){
 	if (data_type == FRAME_DATA_TYPE_RECTANGLE){        
         ROS_INFO("FRAME_DATA_TYPE_RECTANGLE");
@@ -46,9 +52,21 @@ void publishCustomMessage(std::string payload, std::string topic, uint8_t data_t
         recvTime.src_car=src_host;
         publishMessage(recvTime, topic);
     }else
+    if (data_type == FRAME_DATA_TYPE_CAR2CAR){
+          ROS_INFO("FRAME_DATA_TYPE_CAR2CAR");
+          adhoc_customize::Car2Car CarMessageObj;
+          desializeObject((unsigned char*) payload.data(), payload.length(), &CarMessageObj);
+          publishMessage(CarMessageObj, topic);
+    }else
+
+
+
+
     
     ROS_ERROR("UNKNOWN FRAME_DATA_TYPE");
 }
+
+
 #endif
 
 //blabla
