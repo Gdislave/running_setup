@@ -33,7 +33,7 @@
 //#include <sys/time.h>
 
 adhoc_communication::MmRobotPosition current_pos;
-//adhoc_customize::Rectangle rectangle;
+adhoc_customize::Rectangle rectangle;
 
 int main (int argc, char **argv){
 	
@@ -41,12 +41,12 @@ int main (int argc, char **argv){
   ros::NodeHandle nodehandler;
   //ros::Publisher confPub = nodehandler.advertise<std_msgs::String>("t_filename", 1000, false);
 
-  //rectangle.length = 10;
-  //rectangle.width  = 20;
+  rectangle.length = 10;
+  rectangle.width  = 20;
   std::string dst_car = "pses-car6";
 
 
-  //ROS_INFO("length [%d]; width: [%d]", rectangle.length , rectangle.width);
+  ROS_INFO("length [%d]; width: [%d]", rectangle.length , rectangle.width);
   ros::Rate loop_rate(1);
 
   int i = 0;
@@ -70,7 +70,7 @@ int main (int argc, char **argv){
   while(ros::ok() && i<loop){
     i++;
 
-  //adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "mambo-jambo");
+  adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "mambo_jambo");
   adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
 
   //ros::spinOnce();
