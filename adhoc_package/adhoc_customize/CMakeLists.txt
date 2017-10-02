@@ -50,6 +50,7 @@ find_package(catkin REQUIRED COMPONENTS
    Student.msg
   RecvTime.msg
 StringWTime.msg
+   Car2Car.msg
  )
 
 ## Generate services in the 'srv' folder
