@@ -57,6 +57,7 @@ unsigned char bcast_mac[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; /*Broadcast a
 #define FRAME_DATA_TYPE_RECTANGLE 0xf1
 
 
+
 #define MAX_INTERN_JOIN_ATTEMPS 5  //defines how often a robot will try to join a mc group
 #define MAX_JOIN_ATTEMPS 5  //defines how often a robot will try to join a mc group
 #define INTERVAL_WAIT_MC_RECONN 200 //[ms]if a node gets a prune message, it will will a little to give the network time for synconization
