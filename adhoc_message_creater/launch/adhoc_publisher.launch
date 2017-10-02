@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+	<master auto="start"/>
+        <!--send some messages -->
+  <node name="adhoc_message_creater" pkg="adhoc_message_creater" type="adhoc_message_publisher"  output="screen"/>
+</launch>
+
