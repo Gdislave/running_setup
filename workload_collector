@@ -1,0 +1,21 @@
+#!/bin/sh
+# -*- coding: utf-8 -*-
+# workload_script.sh
+# created: 2017-10-02
+# author: Artjom Poljakow a.poljakow@gmx.de
+
+# directory safety. does not resolve links!
+# DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#top -b -n1 | grep -i Cpu >> top.txt   
+#STR=""
+
+Workload=$(top -n1 -b | grep -i -o -P ".{0,5}id,.{0,0}") 
+timestamp=$(date | grep -i -o -P ".{0,0}Okt.{0,9}")
+# der jeweilige Output muss editiert werden um es per cron
+# auf den Systemen laufen zu lassen
+
+resultString="$Workload $timestamp"
+echo $resultString >> benchmark.txt
+
+#echo $STR
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 fenc=utf-8
