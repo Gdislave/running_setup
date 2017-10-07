@@ -32,6 +32,7 @@
 		<!-- Costmap parameters -->
 		<rosparam file="$(find segfault_robot_2dnav)/config/costmap_common_params.yaml" command="load" ns="global_costmap"/>
 		<rosparam file="$(find segfault_robot_2dnav)/config/costmap_common_params.yaml" command="load" ns="local_costmap"/>
+                <!--rosparam file="$(find segfault_robot_2dnav)/config/costmap_common_params.yaml" command="load" ns="local_costmap"/-->
 		<rosparam file="$(find segfault_robot_2dnav)/config/local_costmap_params.yaml" command="load"/>
 		<rosparam file="$(find segfault_robot_2dnav)/config/global_costmap_params.yaml" command="load"/>
 		<rosparam file="$(find segfault_robot_2dnav)/config/teb_local_planner_params.yaml" command="load"/>
