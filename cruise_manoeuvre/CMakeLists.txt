@@ -13,6 +13,7 @@ find_package(catkin REQUIRED
   move_base_msgs
   roscpp
   scenario_handler
+  tf
   )
 
 ## System dependencies are found with CMake's conventions
