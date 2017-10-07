@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+	<master auto="start"/>
+        <!--send some messages -->
+  <node name="cruise_manoeuvre" pkg="cruise_manoeuvre" type="cruise_manoeuvre_node"  output="screen"/>
+</launch>
+
