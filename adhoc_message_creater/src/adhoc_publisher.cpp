@@ -4,6 +4,10 @@
 #include "adhoc_communication/MmRobotPosition.h"
 #include <tf/transform_listener.h>
 
+//SOLLTE SPÄTER IN EINE NODE ZUSAMMENGEFASST WERDEN
+#include "scenario_handler/adhoc_reaction.h"
+
+
 
 //#include "ros/topic.h"
 //#include "adhoc_customize/include.h"
@@ -47,7 +51,8 @@ int main (int argc, char **argv){
   ros::NodeHandle nodehandler;
   tf::TransformListener positionListener;
   //ros::Publisher confPub = nodehandler.advertise<std_msgs::String>("t_filename", 1000, false);
-
+  bool rescueScenario = false,alreadyPublished = false;
+  uintmax_t timer = 0;
   std::string dst_car = "pses-car6";
 
   ros::Rate loop_rate(1);
@@ -85,8 +90,16 @@ int main (int argc, char **argv){
      ros::Duration(1.0).sleep();
    }
 
-
-
+  //geht bestimmt auch über define...
+  if((timer>500)&&rescueScenario&& !(alreadyPublished))
+  {
+    CarMessageObject.Nachrichtentyp = "SOS";
+    scenario_handler::adhoc_reaction reactionObject;
+    reactionObject.message_type = std::string("stopMyself");
+    nodehandler.advertise<scenario_handler::adhoc_reaction>("adhoc_publisherToCruiser",5);
+    alreadyPublished = true;
+    ROS_INFO("Just send a message to stop the machine");
+  };
   //adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "mambo_jambo");
   //adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
   adhoc_communication::sendMessage(CarMessageObject, FRAME_DATA_TYPE_CAR2CAR, "", "Car2Car");
