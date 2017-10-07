@@ -91,7 +91,7 @@ int main (int argc, char **argv){
    }
 
   //geht bestimmt auch über define...
-  if((timer>500)&&rescueScenario&& !(alreadyPublished))
+  if((timer>100)&&rescueScenario&& !(alreadyPublished))
   {
     CarMessageObject.Nachrichtentyp = "SOS";
     scenario_handler::adhoc_reaction reactionObject;
@@ -100,6 +100,7 @@ int main (int argc, char **argv){
     alreadyPublished = true;
     ROS_INFO("Just send a message to stop the machine");
   };
+  ++timer;
   //adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "mambo_jambo");
   //adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
   adhoc_communication::sendMessage(CarMessageObject, FRAME_DATA_TYPE_CAR2CAR, "", "Car2Car");
