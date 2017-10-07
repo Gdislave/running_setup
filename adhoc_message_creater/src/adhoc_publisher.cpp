@@ -2,6 +2,7 @@
 #include "adhoc_customize/include.h"
 #include "adhoc_communication/functions.h"
 #include "adhoc_communication/MmRobotPosition.h"
+#include <tf/transform_listener.h>
 
 
 //#include "ros/topic.h"
@@ -34,11 +35,17 @@
 
 adhoc_customize::Car2Car CarMessageObject;
 
+enum State{
+  READY,
+  ANOTHERSTATE
+};
+
 
 int main (int argc, char **argv){
 	
   ros::init(argc, argv, "adhoc_message_creater");
   ros::NodeHandle nodehandler;
+  tf::TransformListener positionListener;
   //ros::Publisher confPub = nodehandler.advertise<std_msgs::String>("t_filename", 1000, false);
 
   std::string dst_car = "pses-car6";
@@ -54,15 +61,35 @@ int main (int argc, char **argv){
   CarMessageObject.Teilnehmername = std::string("pses-car2");
   CarMessageObject.Nachrichtentyp = std::string("ready");
   CarMessageObject.PositionX = 5;
-  CarMessageObject.PositionX = 10;
-
+  CarMessageObject.PositionY = 10;
+  tf::StampedTransform transformContainer;
 
   while(ros::ok()){
 
-    
+
+  //Routine to get current position, and update the object
+  positionListener.waitForTransform("/map", "/base_footprint", ros::Time(0), ros::Duration(10.0));
+  //tf::StampedTransform transformContainer;
+  try
+   {
+     positionListener.lookupTransform("/map", "/base_footprint",
+                               ros::Time(0), transformContainer);
+     CarMessageObject.PositionX = transformContainer.getOrigin().x();
+     CarMessageObject.PositionY = transformContainer.getOrigin().y();
+     //seems to get the right information
+     //ROS_INFO("Current position: (%f, %f, )\n", xPos,yPos);
+   }
+   catch(tf::TransformException &ex)
+   {
+     ROS_ERROR("%s", ex.what());
+     ros::Duration(1.0).sleep();
+   }
+
+
+
   //adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "mambo_jambo");
   //adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
-  adhoc_communication::sendMessage(CarMessageObject, FRAME_DATA_TYPE_CAR2CAR, dst_car, "Car2Car");
+  adhoc_communication::sendMessage(CarMessageObject, FRAME_DATA_TYPE_CAR2CAR, "", "Car2Car");
 
 
   //ros::spinOnce();
