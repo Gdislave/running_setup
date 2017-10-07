@@ -5,6 +5,7 @@
 #include "std_msgs/String.h"
 #include "scenario_handler/adhoc_reaction.h"
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <tf/transform_listener.h>
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -55,6 +56,7 @@ int main(int argc, char** argv){
   ros::NodeHandle nh;
   ros::Rate loop_rate(40);
   scenario_handler::adhoc_reaction rct_obj;
+  tf::TransformListener positionListener;
   double goalList[9][7] = {
     {-0.019, 8.449, 0, 0, 0, 0,  1.f},
     {11.0, 8.523,   0, 0, 0, 0,    1.000},
@@ -90,7 +92,7 @@ int main(int argc, char** argv){
       subscribe<scenario_handler::adhoc_reaction>
       ("adhoc_rct_message", 10, std::bind(adhoc_cmd_callback, std::placeholders::_1, &rct_obj));
 
-  double weird_pub_counter = 0;
+  //double weird_pub_counter = 0;
 
 
   ros::Duration(30,0).sleep();
@@ -107,9 +109,151 @@ int main(int argc, char** argv){
   ac.sendGoal(goal);
   //pose_pub.publish(initial_pose);
   //if(weird_pub_counter <= 100){ pose_pub.publish(initial_pose); weird_pub_counter++;};
+  bool parameterSemaphore = false, RSU = false, speedLimit = false, approach1 = false, approach2 = false;
+  std::string tag("Road3to4");
+  std::string tagToFlag("empty");
+  float velocityParamter = 0, velocityBuffer = 0, speedLimitValue = 1;
+  double xPos,yPos, distanceToTransmitter1, distanceToTransmitter2, rec1Px, rec1Py, rec2Px, rec2Py;
+  int timedelta1 = 0, timedelta2=0, timedelta3=0, timedelta4=0;
+  int distanceBuffer1 = 0, distanceBuffer2 = 0;
 
 
 while(ros::ok()){
+
+
+  //Testszenario: die RSU ist eine Geschwindigkeitsbegrenzun->speedLimit
+  //Die Einheit befindet sich bei Position,
+  // /*
+  rec1Px = 12.5, rec1Py = -1;
+  rec2Px = 15, rec2Py = -7.5;
+
+  positionListener.waitForTransform("/map", "/base_footprint", ros::Time(0), ros::Duration(10.0));
+  tf::StampedTransform transformTest;
+  try
+   {
+     positionListener.lookupTransform("/map", "/base_footprint",
+                               ros::Time(0), transformTest);
+     xPos = transformTest.getOrigin().x();
+     yPos = transformTest.getOrigin().y();
+     //seems to get the right information
+     //ROS_INFO("Current position: (%f, %f, )\n", xPos,yPos);
+   }
+   catch(tf::TransformException &ex)
+   {
+     ROS_ERROR("%s", ex.what());
+     ros::Duration(1.0).sleep();
+   }
+  distanceToTransmitter1 = sqrt(pow((rec1Px - xPos),2)
+                            + pow((rec1Py - yPos),2));
+  if(distanceToTransmitter1 < 10)
+        {if(!RSU)
+             {RSU= true;
+              ROS_INFO("Receiving messages from RSU");
+              speedLimit = true;
+              }
+        }
+
+  else  {if(RSU)
+             {RSU=false;
+              ROS_INFO("Do not Receive messages from RSU");
+              speedLimit = false;
+              }
+        }
+
+
+
+  //ROS_INFO("Distance to Transmitter: [%f]", distanceToTransmitter1);
+  // */
+
+
+
+  //Pseudo Prosa-Code
+  //Aufpassen ob ein Signal von einer RSU kommt
+  //Falls ja entscheiden was für eins -> Hier Geschwindigkeitsbegrenzung, Ampel
+  //Position von RSU ermitteln und Distanz berechnen
+  //Entscheiden ob man innerhalb des Radius der Beschränkung ist, schon reingekommen
+  //Falls JA
+  //Geschwindigkeit auf Reduktion setzen, weiterfahren
+  //Falls Nein
+  //Keine Änderung -> weiterfahren
+  //Falls Nein aber Bool gesetzt -> bool auf false setzen
+
+
+  //Code um Bools zu setzen, ob das Fahrzeug sich auf die RSUs bewegt oder weg davon.
+
+
+
+
+
+
+
+
+
+
+
+  //RSU-Handling , approach of speed limiter
+  /*
+  if(RSU){
+  //Falls ein Signal von einer RSU bekommen, eigene Position bestimmen. Gespeichert in positionListener
+  positionListener.waitForTransform("/map", "/base_footprint", ros::Time(0), ros::Duration(10.0));
+  tf::StampedTransform transform;
+  try
+   {
+     positionListener.lookupTransform("/map", "/base_footprint", ros::Time(0), transform);
+     xPos = transform.getOrigin().x();
+     yPos = transform.getOrigin().y();
+     //seems to get the right information
+     //ROS_INFO("Current position: (%f, %f, )\n", xPos,yPos);
+   }
+  catch(tf::TransformException &ex)
+   {
+     ROS_ERROR("%s", ex.what());
+     ros::Duration(1.0).sleep();
+   }
+  //Berechnen der Distanz zur RSU-Einheit
+  distanceToTransmitter1 = sqrt(pow((rec1Px - xPos),2)
+                            + pow((rec1Py - yPos),2));
+  //ROS_INFO("Distance to Transmitter: [%f]", distanceToTransmitter1);
+
+
+  if(speedLimit && (distanceToTransmitter1 < 1) && (!parameterSemaphore) && (tagToFlag == "emtpy"))
+  {
+     nh.getParam("/move_base/local_costmap/TebLocalPlannerROS/max_vel_x",velocityParamter);
+     velocityBuffer = velocityParamter;
+     nh.setParam("/move_base/local_costmap/TebLocalPlannerROS/max_vel_x",speedLimitValue);
+     tagToFlag = tag;
+
+     //nh.getParam("/move_base/local_costmap/TebLocalPlannerROS/max_vel_x",speedLimitValue);
+     //ROS_INFO("set velocity auf %f", speedLimitValue);
+
+        //vielleicht ein Akku
+        parameterSemaphore = true;
+  }
+
+
+  if(speedLimit && !(distanceToTransmitter1 <2) && parameterSemaphore &&)
+  {
+     nh.setParam("/move_base/local_costmap/TebLocalPlannerROS/max_vel_x",velocityBuffer);
+     velocityBuffer = 0;
+
+
+
+     //nh.getParam("/move_base/local_costmap/TebLocalPlannerROS/max_vel_x",velocityBuffer);
+     //ROS_INFO("set velocity auf %f", velocityBuffer);
+     //velocityBuffer = 0;
+
+
+     parameterSemaphore = false;
+     //Akku delete
+  }
+
+  }//RSU Klammer
+  */
+
+
+
+
+
 
 
   //ROS_INFO("Sending Goal [%d]!", goal_tracker);
@@ -139,6 +283,8 @@ while(ros::ok()){
   else
     ROS_INFO("The base failed to move forward");
   */
-  }
+  }//While(ROS::OK)Klammer
+ //}
   return 0;
 }
+
