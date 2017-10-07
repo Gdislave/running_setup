@@ -143,6 +143,8 @@ while(ros::ok()){
      ROS_ERROR("%s", ex.what());
      ros::Duration(1.0).sleep();
    }
+
+
   distanceToTransmitter1 = sqrt(pow((rec1Px - xPos),2)
                             + pow((rec1Py - yPos),2));
   if(distanceToTransmitter1 < 10)
