@@ -68,6 +68,8 @@ int main (int argc, char **argv){
   CarMessageObject.PositionX = 5;
   CarMessageObject.PositionY = 10;
   tf::StampedTransform transformContainer;
+  scenario_handler::adhoc_reaction reactionObject;
+
 
   while(ros::ok()){
 
@@ -94,9 +96,12 @@ int main (int argc, char **argv){
   if((timer>100)&&rescueScenario&& !(alreadyPublished))
   {
     CarMessageObject.Nachrichtentyp = "SOS";
-    scenario_handler::adhoc_reaction reactionObject;
+
     reactionObject.message_type = std::string("stopMyself");
-    nodehandler.advertise<scenario_handler::adhoc_reaction>("adhoc_publisherToCruiser",5);
+    for(int miraclecounter = 0; miraclecounter < 20; ++miraclecounter )
+    {
+      nodehandler.advertise<scenario_handler::adhoc_reaction>("adhoc_publisherToCruiser",5);
+    }
     alreadyPublished = true;
     ROS_INFO("Just send a message to stop the machine");
   };
