@@ -48,6 +48,8 @@ int main (int argc, char **argv){
 	ROS_INFO("loop [%d]; Dest: [%s] ; Source: [%s]", loop, dst_car.c_str(), src_car.c_str());
 	current_pos.src_robot = src_car; 
 	
+
+  ros::Duration(10,0).sleep();
   ros::Rate loop_rate(10);
 
 

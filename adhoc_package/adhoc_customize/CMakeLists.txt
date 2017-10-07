@@ -48,8 +48,8 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    Rectangle.msg
    Student.msg
-  RecvTime.msg
-StringWTime.msg
+   RecvTime.msg
+   StringWTime.msg
    Car2Car.msg
  )
 
