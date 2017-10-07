@@ -55,7 +55,11 @@ int main(int argc, char** argv){
   ros::init(argc, argv, "simple_navigation_goals");
   ros::NodeHandle nh;
   ros::Rate loop_rate(40);
+
   scenario_handler::adhoc_reaction rct_obj;
+  scenario_handler::adhoc_reaction adhoc_publisherToCruiser_object;
+
+
   tf::TransformListener positionListener;
   double goalList[9][7] = {
     {-0.019, 8.449, 0, 0, 0, 0,  1.f},
@@ -88,9 +92,16 @@ int main(int argc, char** argv){
 
   move_base_msgs::MoveBaseGoal goal;
   goal.target_pose.header.frame_id = "map";//"was base_link
+
+  //ggf. reduntant
   ros::Subscriber reaction_sub = nh.
       subscribe<scenario_handler::adhoc_reaction>
       ("adhoc_rct_message", 10, std::bind(adhoc_cmd_callback, std::placeholders::_1, &rct_obj));
+
+
+  ros::Subscriber adhoc_publisherToCruiserSubscriber = nh.
+      subscribe<scenario_handler::adhoc_reaction>
+      ("adhoc_publisherToCruiser", 1, std::bind(adhoc_cmd_callback, std::placeholders::_1, &adhoc_publisherToCruiser_object));
 
   //double weird_pub_counter = 0;
 
@@ -276,6 +287,16 @@ while(ros::ok()){
     ac.sendGoal(goal);
     ROS_INFO("received emergencycall from %s and heading its direction , every other command will be ignored :)", rct_obj.source.c_str());
     ac.waitForResult();
+  }
+
+  //Nachricht zum Beenden der Routine für das ErsteHilfe Szenario
+  if(adhoc_publisherToCruiser_object.message_type == "stopMyself")
+  {
+    ac.cancelAllGoals();
+    //Setting emergency goal
+    ROS_INFO("Just stopped every goal");
+    ac.waitForResult();
+    ros::requestShutdown();
   }
   ros::spinOnce();
 
