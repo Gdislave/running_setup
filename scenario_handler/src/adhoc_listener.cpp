@@ -79,7 +79,8 @@ int main(int argc, char **argv)
   //time_a = ;
 
   MoveBaseClient ac("move_base", true);
-  while(!ac.waitForServer(ros::Duration(5.0))){
+  while(!ac.waitForServer(ros::Duration(5.0)))
+  {
       ROS_INFO("Waiting for the move_base action server to come up");
   }
 
