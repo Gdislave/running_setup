@@ -46,16 +46,16 @@ enum State{
   ANOTHERSTATE
 };
 
-void Car2Car_Callback(const adhoc_customize::Car2Car::ConstPtr& tfl_pos_ptr, std::unordered_map<std::string, geometry_msgs::Pose>* pose_map)
+void Car2Car_Callback(const adhoc_customize::Car2Car::ConstPtr& tfl_pos_ptr, std::unordered_map<std::string, adhoc_customize::Car2Car>* pose_map)
 {
-  (*pose_map)[tfl_pos_ptr->src_robot].orientation = tfl_pos_ptr->position.pose.orientation;
-  (*pose_map)[tfl_pos_ptr->src_robot].position = tfl_pos_ptr->position.pose.position;
+  //(*pose_map)[tfl_pos_ptr->src_robot].orientation = tfl_pos_ptr->position.pose.orientation;
+  //(*pose_map)[tfl_pos_ptr->src_robot].position = tfl_pos_ptr->position.pose.position;
   //std::cout << tfl_pos_ptr->position.pose.orientation.x << ": " << tfl_pos_ptr->position.pose.orientation.y<< " : " << tfl_pos_ptr->position.pose.orientation.z<< " : " << tfl_pos_ptr->position.pose.orientation.w << std::endl;
 
   ROS_INFO("Updated Map Content: ");
   for (auto& x: *pose_map) {
 
-      std::cout << x.first << ": " << x.second.position.x << ": " << x.second.position.y << ": " << x.second.position.z << ": " << std::endl;
+      //std::cout << x.first << ": " << x.second.position.x << ": " << x.second.position.y << ": " << x.second.position.z << ": " << std::endl;
     }
 
 }
@@ -74,7 +74,7 @@ int main (int argc, char **argv){
   uintmax_t timer = 0;
   std::string dst_car = "pses-car6";
   std::unordered_map<std::string, geometry_msgs::Pose> pose_map;
-  std::unordered_map<adhoc_customize::Car2Car::Teilnehmername , geometry_msgs::Pose> adhoc_members;
+  std::unordered_map<std::string, adhoc_customize::Car2Car> adhoc_members;
 
   ros::Rate loop_rate(1);
 
