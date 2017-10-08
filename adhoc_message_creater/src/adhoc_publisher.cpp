@@ -3,6 +3,8 @@
 #include "adhoc_communication/functions.h"
 #include "adhoc_communication/MmRobotPosition.h"
 #include <tf/transform_listener.h>
+#include <unordered_map>
+
 
 //SOLLTE SPÄTER IN EINE NODE ZUSAMMENGEFASST WERDEN
 #include "scenario_handler/adhoc_reaction.h"
@@ -44,6 +46,23 @@ enum State{
   ANOTHERSTATE
 };
 
+void Car2Car_Callback(const adhoc_customize::Car2Car::ConstPtr& tfl_pos_ptr, std::unordered_map<std::string, geometry_msgs::Pose>* pose_map)
+{
+  (*pose_map)[tfl_pos_ptr->src_robot].orientation = tfl_pos_ptr->position.pose.orientation;
+  (*pose_map)[tfl_pos_ptr->src_robot].position = tfl_pos_ptr->position.pose.position;
+  //std::cout << tfl_pos_ptr->position.pose.orientation.x << ": " << tfl_pos_ptr->position.pose.orientation.y<< " : " << tfl_pos_ptr->position.pose.orientation.z<< " : " << tfl_pos_ptr->position.pose.orientation.w << std::endl;
+
+  ROS_INFO("Updated Map Content: ");
+  for (auto& x: *pose_map) {
+
+      std::cout << x.first << ": " << x.second.position.x << ": " << x.second.position.y << ": " << x.second.position.z << ": " << std::endl;
+    }
+
+}
+
+
+
+
 
 int main (int argc, char **argv){
 	
@@ -54,6 +73,8 @@ int main (int argc, char **argv){
   bool rescueScenario = false,alreadyPublished = false;
   uintmax_t timer = 0;
   std::string dst_car = "pses-car6";
+  std::unordered_map<std::string, geometry_msgs::Pose> pose_map;
+  std::unordered_map<adhoc_customize::Car2Car::Teilnehmername , geometry_msgs::Pose> adhoc_members;
 
   ros::Rate loop_rate(1);
 
@@ -61,7 +82,7 @@ int main (int argc, char **argv){
   ros::Duration(5,0).sleep();
 
 
-  //Settings CarMessageTest attributes:
+  //Settings CarMessageTest start attributes:
   CarMessageObject.Teilnehmertyp0Fahrzeug1RSU = 0;
   CarMessageObject.Teilnehmername = std::string("pses-car2");
   CarMessageObject.Nachrichtentyp = std::string("ready");
