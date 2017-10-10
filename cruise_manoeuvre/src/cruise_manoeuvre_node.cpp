@@ -277,16 +277,20 @@ while(ros::ok()){
     switchGoal(goal, goal_tracker, goalList);
   }
   //ac.waitForResult(); selfmade including check for new commands from publisher
-  if(rct_obj.message_type == "SOS")
+
+  //Wenn eine Nachricht zum Helfen kommt, dann aktuelle Ziele Abbrechen und zum neuen Ziel fahren
+  if(adhoc_publisherToCruiser_object.message_type == "Ambulance")
   {
     ac.cancelAllGoals();
     //Setting emergency goal
     goal.target_pose.header.stamp = ros::Time::now();
-    goal.target_pose.pose.position.x = rct_obj.position.x;
-    goal.target_pose.pose.position.y = rct_obj.position.y;
+    goal.target_pose.pose.position.x = adhoc_publisherToCruiser_object.position.x;
+    goal.target_pose.pose.position.y = adhoc_publisherToCruiser_object.position.y;
     ac.sendGoal(goal);
-    ROS_INFO("received emergencycall from %s and heading its direction , every other command will be ignored :)", rct_obj.source.c_str());
+    ROS_INFO("received emergencycall from %s and heading its direction , "
+             "every other command will be ignored :)", adhoc_publisherToCruiser_object.source.c_str());
     ac.waitForResult();
+    if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){ros::requestShutdown();}
   }
 
   //Nachricht zum Beenden der Routine für das ErsteHilfe Szenario
