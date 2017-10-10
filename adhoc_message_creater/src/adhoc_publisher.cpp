@@ -81,7 +81,7 @@ void car2car_simple_callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMs
 
       ROS_INFO("I've heard something.");
       subscribe_CarMessageObject = *Car2CarMsgR_rcvd;
-      ROS_INFO("%s",subscribe_CarMessageObject.Teilnehmername.c_str());
+      //ROS_INFO("%s",subscribe_CarMessageObject.Teilnehmername.c_str());
       //why no copy consctructore
       //(*Car2CarMsgR_own).Teilnehmername = Car2CarMsgR_rcvd->Teilnehmername;
       //(*Car2CarMsgR_own).Nachrichtentyp = Car2CarMsgR_rcvd->Nachrichtentyp;
@@ -137,7 +137,7 @@ int main (int argc, char **argv){
 
   //ros::Subscriber Car2Car_subscriber = nodehandler.subscribe<adhoc_customize::Car2Car>("Car2Car", 10, boost::bind(car2car_standard_callback, _1, &subscribe_CarMessageObject));
   //ros::Subscriber tfp_sub = nh.subscribe<adhoc_communication::MmRobotPosition>("traffic_light_position", 10, std::bind(traffic_light_positionCallback, std::placeholders::_1, &pose_map));
-  ros::Subscriber Car2Car_subscriber = nodehandler.subscribe<adhoc_customize::Car2Car>("Car2Car", 10, car2car_simple_callback) ;
+  ros::Subscriber Car2Car_subscriber = nodehandler.subscribe<adhoc_customize::Car2Car>("Car2Car", 3, car2car_simple_callback) ;
 
 
 
@@ -145,6 +145,7 @@ int main (int argc, char **argv){
 
   
   ROS_INFO("Currently publishing %d.", Car2Car_subscriber.getNumPublishers());
+  ROS_INFO("Current subscribtion is: %s", subscribe_CarMessageObject.Teilnehmername.c_str());
   //ROS_INFO("Currently publishing %s.", subscribe_CarMessageObject.Teilnehmername.c_str());
   //Routine to get current position, and update the object
   positionListener.waitForTransform("/map", "/base_footprint", ros::Time(0), ros::Duration(10.0));
