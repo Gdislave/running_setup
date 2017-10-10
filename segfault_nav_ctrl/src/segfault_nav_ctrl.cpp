@@ -29,9 +29,6 @@ int main(int argc, char **argv)
   */
   const float max_motor_level = 20.f;
   const float min_motor_level = -20.f;
-  const float max_steering_level = 50.f;
-  const float min_steering_level = -50.f;
-  const float bias = -4.f;
   float speed_level = 0.f;
   double PI = 3.14159;
   double velCmd = 0;
