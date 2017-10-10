@@ -69,6 +69,8 @@ void Car2Car_Callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_ptr,
 void car2car_standard_callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_rcvd,
                                adhoc_customize::Car2Car *Car2CarMsgR_own)
   {
+
+      ROS_INFO("I've heard something.");
       //why no copy consctructore
       (*Car2CarMsgR_own).Teilnehmername = Car2CarMsgR_rcvd->Teilnehmername;
       (*Car2CarMsgR_own).Nachrichtentyp = Car2CarMsgR_rcvd->Nachrichtentyp;
@@ -117,7 +119,7 @@ int main (int argc, char **argv){
 
   while(ros::ok()){
 
-
+  ROS_INFO("Currently publishing %d.", Car2Car_subscriber.getNumPublishers());
   //Routine to get current position, and update the object
   positionListener.waitForTransform("/map", "/base_footprint", ros::Time(0), ros::Duration(10.0));
   //tf::StampedTransform transformContainer;
