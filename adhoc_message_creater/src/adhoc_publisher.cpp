@@ -109,7 +109,7 @@ int main (int argc, char **argv){
   //ros::Publisher confPub = nodehandler.advertise<std_msgs::String>("t_filename", 1000, false);
   bool rescueScenario = false,alreadyPublished = false;
   uintmax_t timer = 0;
-  std::string dst_car = "pses-car6";
+  std::string dst_car = "";
   //std::unordered_map<std::string, geometry_msgs::Pose> pose_map;
   //std::unordered_map<std::string, adhoc_customize::Car2Car> adhoc_members;
   adhoc_customize::Car2Car publish_CarMessageObject;
@@ -137,6 +137,8 @@ int main (int argc, char **argv){
 
   //ros::Subscriber Car2Car_subscriber = nodehandler.subscribe<adhoc_customize::Car2Car>("Car2Car", 10, boost::bind(car2car_standard_callback, _1, &subscribe_CarMessageObject));
   //ros::Subscriber tfp_sub = nh.subscribe<adhoc_communication::MmRobotPosition>("traffic_light_position", 10, std::bind(traffic_light_positionCallback, std::placeholders::_1, &pose_map));
+
+  //usual binding seems not to work for objects using customize
   ros::Subscriber Car2Car_subscriber = nodehandler.subscribe<adhoc_customize::Car2Car>("Car2Car", 3, car2car_simple_callback) ;
 
 
@@ -177,9 +179,27 @@ int main (int argc, char **argv){
 
   };
   ++timer;
+
+  //rescuevehicle
+  if((subscribe_CarMessageObject.Nachrichtentyp == "SOS") && !(alreadyPublished))
+  {
+    publish_CarMessageObject.Nachrichtentyp = "Ambulance";
+
+    reactionObject.message_type = std::string("Ambulance");
+    reactionObject.position.x = subscribe_CarMessageObject.PositionX;
+    reactionObject.position.y = subscribe_CarMessageObject.PositionY;
+    dst_car = subscribe_CarMessageObject.Teilnehmername;
+
+    adhoc_to_cruise_publisher.publish(reactionObject);
+    alreadyPublished = true;
+    ROS_INFO("Just send a message to rescue another vehicle");
+
+  };
+
+
   //adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "mambo_jambo");
   //adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
-  adhoc_communication::sendMessage(publish_CarMessageObject, FRAME_DATA_TYPE_CAR2CAR, "", "Car2Car");
+  adhoc_communication::sendMessage(publish_CarMessageObject, FRAME_DATA_TYPE_CAR2CAR, dst_car, "Car2Car");
 
 
   loop_rate.sleep();
