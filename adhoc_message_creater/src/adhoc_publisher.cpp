@@ -43,7 +43,7 @@ enum State{
   READY,
   ANOTHERSTATE
 };
-
+adhoc_customize::Car2Car subscribe_CarMessageObject;
 /*
 void Car2Car_Callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_ptr, std::unordered_map<std::string, adhoc_customize::Car2Car>* pose_map)
 {
@@ -64,7 +64,8 @@ void Car2Car_Callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_ptr,
 
 
 //Subscriber Callback
-void car2car_standard_callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_rcvd)
+void car2car_standard_callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_rcvd,
+                               adhoc_customize::Car2Car Car2CarMsgR_own)
   {
 
       ROS_INFO("I've heard something.");
@@ -75,7 +76,20 @@ void car2car_standard_callback(const adhoc_customize::Car2Car::ConstPtr& Car2Car
       //ROS_INFO("State of member: %s", (*Car2CarMsgR_own).Nachrichtentyp.c_str() );
   }
 
+void car2car_simple_callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_rcvd)
+  {
 
+      ROS_INFO("I've heard something.");
+      subscribe_CarMessageObject = *Car2CarMsgR_rcvd;
+      ROS_INFO("%s",subscribe_CarMessageObject.Teilnehmername.c_str());
+      //why no copy consctructore
+      //(*Car2CarMsgR_own).Teilnehmername = Car2CarMsgR_rcvd->Teilnehmername;
+      //(*Car2CarMsgR_own).Nachrichtentyp = Car2CarMsgR_rcvd->Nachrichtentyp;
+      //ROS_INFO("Updated Content: %s", (*Car2CarMsgR_own).Teilnehmername.c_str() );
+      //ROS_INFO("State of member: %s", (*Car2CarMsgR_own).Nachrichtentyp.c_str() );
+  }
+
+/*
 void car2car_new_robot(const std_msgs::String::ConstPtr& new_robot_rcvd,
                                std_msgs::String *new_robot_own)
   {
@@ -83,7 +97,7 @@ void car2car_new_robot(const std_msgs::String::ConstPtr& new_robot_rcvd,
       *new_robot_own = *new_robot_rcvd;
       ROS_INFO("Updated Car: %s", (*new_robot_own));
   }
-
+*/
 
 
 
@@ -99,8 +113,8 @@ int main (int argc, char **argv){
   //std::unordered_map<std::string, geometry_msgs::Pose> pose_map;
   //std::unordered_map<std::string, adhoc_customize::Car2Car> adhoc_members;
   adhoc_customize::Car2Car publish_CarMessageObject;
-  adhoc_customize::Car2Car subscribe_CarMessageObject;
-  std_msgs::String aweSomeString;
+  //adhoc_customize::Car2Car subscribe_CarMessageObject;
+
 
 
   ros::Rate loop_rate(1);
@@ -121,13 +135,13 @@ int main (int argc, char **argv){
   ros::Publisher adhoc_to_cruise_publisher =
   nodehandler.advertise<scenario_handler::adhoc_reaction>("adhoc_publisherToCruiser",5);
 
-  ros::Subscriber Car2Car_subscriber = nodehandler.subscribe<adhoc_customize::Car2Car>
-      ("Car2Car", 10, car2car_standard_callback);
+  //ros::Subscriber Car2Car_subscriber = nodehandler.subscribe<adhoc_customize::Car2Car>("Car2Car", 10, boost::bind(car2car_standard_callback, _1, &subscribe_CarMessageObject));
+  //ros::Subscriber tfp_sub = nh.subscribe<adhoc_communication::MmRobotPosition>("traffic_light_position", 10, std::bind(traffic_light_positionCallback, std::placeholders::_1, &pose_map));
+  ros::Subscriber Car2Car_subscriber = nodehandler.subscribe<adhoc_customize::Car2Car>("Car2Car", 10, car2car_simple_callback) ;
+
+
 
   while(ros::ok()){
-
-  /*  
-  */
 
   
   ROS_INFO("Currently publishing %d.", Car2Car_subscriber.getNumPublishers());
