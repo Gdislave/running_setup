@@ -188,6 +188,7 @@ int main (int argc, char **argv){
     reactionObject.message_type = std::string("Ambulance");
     reactionObject.position.x = subscribe_CarMessageObject.PositionX;
     reactionObject.position.y = subscribe_CarMessageObject.PositionY;
+    reactionObject.source = subscribe_CarMessageObject.Teilnehmername;
     dst_car = subscribe_CarMessageObject.Teilnehmername;
 
     adhoc_to_cruise_publisher.publish(reactionObject);
