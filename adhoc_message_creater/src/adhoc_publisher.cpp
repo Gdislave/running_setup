@@ -39,16 +39,19 @@
 //#include <string>
 //#include <sys/time.h>
 
-adhoc_customize::Car2Car CarMessageObject;
+
 
 enum State{
   READY,
   ANOTHERSTATE
 };
 
-void Car2Car_Callback(const adhoc_customize::Car2Car::ConstPtr& tfl_pos_ptr, std::unordered_map<std::string, adhoc_customize::Car2Car>* pose_map)
+/*
+void Car2Car_Callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_ptr, std::unordered_map<std::string, adhoc_customize::Car2Car>* pose_map)
 {
-  //(*pose_map)[tfl_pos_ptr->src_robot].orientation = tfl_pos_ptr->position.pose.orientation;
+
+  //(*pose_map)[Car2CarMsgR_ptr->Teilnehmername] = Car2CarMsgR_ptr;
+  pose_map->insert(Car2CarMsgR_ptr->Teilnehmername,Car2CarMsgR_ptr);
   //(*pose_map)[tfl_pos_ptr->src_robot].position = tfl_pos_ptr->position.pose.position;
   //std::cout << tfl_pos_ptr->position.pose.orientation.x << ": " << tfl_pos_ptr->position.pose.orientation.y<< " : " << tfl_pos_ptr->position.pose.orientation.z<< " : " << tfl_pos_ptr->position.pose.orientation.w << std::endl;
 
@@ -59,7 +62,19 @@ void Car2Car_Callback(const adhoc_customize::Car2Car::ConstPtr& tfl_pos_ptr, std
     }
 
 }
+*/
 
+
+//Subscriber Callback
+void car2car_standard_callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_rcvd,
+                               adhoc_customize::Car2Car *Car2CarMsgR_own)
+  {
+      //why no copy consctructore
+      (*Car2CarMsgR_own).Teilnehmername = Car2CarMsgR_rcvd->Teilnehmername;
+      (*Car2CarMsgR_own).Nachrichtentyp = Car2CarMsgR_rcvd->Nachrichtentyp;
+      ROS_INFO("Updated Content: %s", (*Car2CarMsgR_own).Teilnehmername.c_str() );
+      ROS_INFO("State of member: %s", (*Car2CarMsgR_own).Nachrichtentyp.c_str() );
+  }
 
 
 
@@ -73,8 +88,10 @@ int main (int argc, char **argv){
   bool rescueScenario = false,alreadyPublished = false;
   uintmax_t timer = 0;
   std::string dst_car = "pses-car6";
-  std::unordered_map<std::string, geometry_msgs::Pose> pose_map;
-  std::unordered_map<std::string, adhoc_customize::Car2Car> adhoc_members;
+  //std::unordered_map<std::string, geometry_msgs::Pose> pose_map;
+  //std::unordered_map<std::string, adhoc_customize::Car2Car> adhoc_members;
+  adhoc_customize::Car2Car publish_CarMessageObject;
+  adhoc_customize::Car2Car subscribe_CarMessageObject;
 
   ros::Rate loop_rate(1);
 
@@ -83,15 +100,20 @@ int main (int argc, char **argv){
 
 
   //Settings CarMessageTest start attributes:
-  CarMessageObject.Teilnehmertyp0Fahrzeug1RSU = 0;
-  CarMessageObject.Teilnehmername = std::string("pses-car2");
-  CarMessageObject.Nachrichtentyp = std::string("ready");
-  CarMessageObject.PositionX = 5;
-  CarMessageObject.PositionY = 10;
+  publish_CarMessageObject.Teilnehmertyp0Fahrzeug1RSU = 0;
+  publish_CarMessageObject.Teilnehmername = std::string("pses-car2");
+  publish_CarMessageObject.Nachrichtentyp = std::string("ready");
+  publish_CarMessageObject.PositionX = 5;
+  publish_CarMessageObject.PositionY = 10;
+
   tf::StampedTransform transformContainer;
   scenario_handler::adhoc_reaction reactionObject;
   ros::Publisher adhoc_to_cruise_publisher =
   nodehandler.advertise<scenario_handler::adhoc_reaction>("adhoc_publisherToCruiser",5);
+  ros::Subscriber Car2Car_subscriber = nodehandler.subscribe<adhoc_customize::Car2Car>
+      ("Car2Car", 10, std::bind(car2car_standard_callback, std::placeholders::_1, &subscribe_CarMessageObject));
+
+
 
   while(ros::ok()){
 
@@ -103,8 +125,8 @@ int main (int argc, char **argv){
    {
      positionListener.lookupTransform("/map", "/base_footprint",
                                ros::Time(0), transformContainer);
-     CarMessageObject.PositionX = transformContainer.getOrigin().x();
-     CarMessageObject.PositionY = transformContainer.getOrigin().y();
+     publish_CarMessageObject.PositionX = transformContainer.getOrigin().x();
+     publish_CarMessageObject.PositionY = transformContainer.getOrigin().y();
      //seems to get the right information
      //ROS_INFO("Current position: (%f, %f, )\n", xPos,yPos);
    }
@@ -117,20 +139,18 @@ int main (int argc, char **argv){
   //geht bestimmt auch über define...
   if((timer>100)&&rescueScenario&& !(alreadyPublished))
   {
-    CarMessageObject.Nachrichtentyp = "SOS";
+    publish_CarMessageObject.Nachrichtentyp = "SOS";
 
     reactionObject.message_type = std::string("stopMyself");
-    //for(int miraclecounter = 0; miraclecounter < 20; ++miraclecounter )
-    //{
-      adhoc_to_cruise_publisher.publish(reactionObject);
-    //}
+    adhoc_to_cruise_publisher.publish(reactionObject);
     alreadyPublished = true;
     ROS_INFO("Just send a message to stop the machine");
+
   };
   ++timer;
   //adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "mambo_jambo");
   //adhoc_communication::sendMessage(current_pos, FRAME_DATA_TYPE_POSITION, dst_car, "traffic_light_position");
-  adhoc_communication::sendMessage(CarMessageObject, FRAME_DATA_TYPE_CAR2CAR, "", "Car2Car");
+  adhoc_communication::sendMessage(publish_CarMessageObject, FRAME_DATA_TYPE_CAR2CAR, "", "Car2Car");
 
 
   //ros::spinOnce();
