@@ -4,8 +4,6 @@
 #include "adhoc_communication/MmRobotPosition.h"
 #include <tf/transform_listener.h>
 #include <unordered_map>
-
-
 //SOLLTE SPÄTER IN EINE NODE ZUSAMMENGEFASST WERDEN
 #include "scenario_handler/adhoc_reaction.h"
 
@@ -66,16 +64,24 @@ void Car2Car_Callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_ptr,
 
 
 //Subscriber Callback
-void car2car_standard_callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_rcvd,
-                               adhoc_customize::Car2Car *Car2CarMsgR_own)
+void car2car_standard_callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_rcvd)
   {
 
       ROS_INFO("I've heard something.");
       //why no copy consctructore
-      (*Car2CarMsgR_own).Teilnehmername = Car2CarMsgR_rcvd->Teilnehmername;
-      (*Car2CarMsgR_own).Nachrichtentyp = Car2CarMsgR_rcvd->Nachrichtentyp;
-      ROS_INFO("Updated Content: %s", (*Car2CarMsgR_own).Teilnehmername.c_str() );
-      ROS_INFO("State of member: %s", (*Car2CarMsgR_own).Nachrichtentyp.c_str() );
+      //(*Car2CarMsgR_own).Teilnehmername = Car2CarMsgR_rcvd->Teilnehmername;
+      //(*Car2CarMsgR_own).Nachrichtentyp = Car2CarMsgR_rcvd->Nachrichtentyp;
+      //ROS_INFO("Updated Content: %s", (*Car2CarMsgR_own).Teilnehmername.c_str() );
+      //ROS_INFO("State of member: %s", (*Car2CarMsgR_own).Nachrichtentyp.c_str() );
+  }
+
+
+void car2car_new_robot(const std_msgs::String::ConstPtr& new_robot_rcvd,
+                               std_msgs::String *new_robot_own)
+  {
+
+      *new_robot_own = *new_robot_rcvd;
+      ROS_INFO("Updated Car: %s", (*new_robot_own));
   }
 
 
@@ -94,6 +100,8 @@ int main (int argc, char **argv){
   //std::unordered_map<std::string, adhoc_customize::Car2Car> adhoc_members;
   adhoc_customize::Car2Car publish_CarMessageObject;
   adhoc_customize::Car2Car subscribe_CarMessageObject;
+  std_msgs::String aweSomeString;
+
 
   ros::Rate loop_rate(1);
 
@@ -112,14 +120,18 @@ int main (int argc, char **argv){
   scenario_handler::adhoc_reaction reactionObject;
   ros::Publisher adhoc_to_cruise_publisher =
   nodehandler.advertise<scenario_handler::adhoc_reaction>("adhoc_publisherToCruiser",5);
+
   ros::Subscriber Car2Car_subscriber = nodehandler.subscribe<adhoc_customize::Car2Car>
-      ("Car2Car", 10, std::bind(car2car_standard_callback, std::placeholders::_1, &subscribe_CarMessageObject));
-
-
+      ("Car2Car", 10, car2car_standard_callback);
 
   while(ros::ok()){
 
+  /*  
+  */
+
+  
   ROS_INFO("Currently publishing %d.", Car2Car_subscriber.getNumPublishers());
+  //ROS_INFO("Currently publishing %s.", subscribe_CarMessageObject.Teilnehmername.c_str());
   //Routine to get current position, and update the object
   positionListener.waitForTransform("/map", "/base_footprint", ros::Time(0), ros::Duration(10.0));
   //tf::StampedTransform transformContainer;
@@ -155,8 +167,9 @@ int main (int argc, char **argv){
   adhoc_communication::sendMessage(publish_CarMessageObject, FRAME_DATA_TYPE_CAR2CAR, "", "Car2Car");
 
 
-  //ros::spinOnce();
   loop_rate.sleep();
+  ros::spinOnce();
+  
   };
   return 1;
 
