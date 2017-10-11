@@ -68,6 +68,7 @@ void car2car_standard_callback(const adhoc_customize::Car2Car::ConstPtr& Car2Car
                                adhoc_customize::Car2Car Car2CarMsgR_own)
   {
 
+      //does not work....
       ROS_INFO("I've heard something.");
       //why no copy consctructore
       //(*Car2CarMsgR_own).Teilnehmername = Car2CarMsgR_rcvd->Teilnehmername;
@@ -81,23 +82,8 @@ void car2car_simple_callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMs
 
       ROS_INFO("I've heard something.");
       subscribe_CarMessageObject = *Car2CarMsgR_rcvd;
-      //ROS_INFO("%s",subscribe_CarMessageObject.Teilnehmername.c_str());
-      //why no copy consctructore
-      //(*Car2CarMsgR_own).Teilnehmername = Car2CarMsgR_rcvd->Teilnehmername;
-      //(*Car2CarMsgR_own).Nachrichtentyp = Car2CarMsgR_rcvd->Nachrichtentyp;
-      //ROS_INFO("Updated Content: %s", (*Car2CarMsgR_own).Teilnehmername.c_str() );
-      //ROS_INFO("State of member: %s", (*Car2CarMsgR_own).Nachrichtentyp.c_str() );
-  }
 
-/*
-void car2car_new_robot(const std_msgs::String::ConstPtr& new_robot_rcvd,
-                               std_msgs::String *new_robot_own)
-  {
-
-      *new_robot_own = *new_robot_rcvd;
-      ROS_INFO("Updated Car: %s", (*new_robot_own));
-  }
-*/
+}
 
 
 
@@ -114,7 +100,7 @@ int main (int argc, char **argv){
   //std::unordered_map<std::string, adhoc_customize::Car2Car> adhoc_members;
   adhoc_customize::Car2Car publish_CarMessageObject;
   //adhoc_customize::Car2Car subscribe_CarMessageObject;
-
+  std::string Teilnehmertyp = "";//Fahrzeug,Ampel,Geschwindigkeitsbegrenzung
 
 
   ros::Rate loop_rate(1);
@@ -124,11 +110,40 @@ int main (int argc, char **argv){
 
 
   //Settings CarMessageTest start attributes:
-  publish_CarMessageObject.Teilnehmertyp0Fahrzeug1RSU = 0;
-  publish_CarMessageObject.Teilnehmername = std::string("pses-car2");
-  publish_CarMessageObject.Nachrichtentyp = std::string("ready");
-  publish_CarMessageObject.PositionX = 5;
-  publish_CarMessageObject.PositionY = 10;
+   if(Teilnehmertyp == "Fahrzeug")
+  {
+
+      publish_CarMessageObject.Teilnehmertyp0Fahrzeug1RSU = 0;
+      publish_CarMessageObject.Teilnehmername = std::string("pses-car2");
+      publish_CarMessageObject.Nachrichtentyp = std::string("ready");
+      publish_CarMessageObject.PositionX = 5;
+      publish_CarMessageObject.PositionY = 10;
+
+  };
+
+   if(Teilnehmertyp == "Geschwindigkeitsbegrenzung")
+  {
+
+      publish_CarMessageObject.Teilnehmertyp0Fahrzeug1RSU = 1;
+      publish_CarMessageObject.Teilnehmername = std::string("RSU1");
+      publish_CarMessageObject.Nachrichtentyp = std::string("limit");
+      publish_CarMessageObject.PositionX = 12;
+      publish_CarMessageObject.PositionY = -2;
+      publish_CarMessageObject.limit_tag = "HollywoodHills";
+      publish_CarMessageObject.speedLimit = 0.6;
+
+  };
+
+   if(Teilnehmertyp == "Ampel")//Braucht Verbesserung
+  {
+
+      publish_CarMessageObject.Teilnehmertyp0Fahrzeug1RSU = 1;
+      publish_CarMessageObject.Teilnehmername = std::string("Ampel");
+      publish_CarMessageObject.Nachrichtentyp = std::string("Ampel");
+      publish_CarMessageObject.PositionX = 12;
+      publish_CarMessageObject.PositionY = -2;
+
+  };
 
   tf::StampedTransform transformContainer;
   scenario_handler::adhoc_reaction reactionObject;
@@ -145,28 +160,29 @@ int main (int argc, char **argv){
 
   while(ros::ok()){
 
-  
-  ROS_INFO("Currently publishing %d.", Car2Car_subscriber.getNumPublishers());
-  ROS_INFO("Current subscribtion is: %s", subscribe_CarMessageObject.Teilnehmername.c_str());
-  //ROS_INFO("Currently publishing %s.", subscribe_CarMessageObject.Teilnehmername.c_str());
-  //Routine to get current position, and update the object
-  positionListener.waitForTransform("/map", "/base_footprint", ros::Time(0), ros::Duration(10.0));
-  //tf::StampedTransform transformContainer;
-  try
-   {
-     positionListener.lookupTransform("/map", "/base_footprint",
-                               ros::Time(0), transformContainer);
-     publish_CarMessageObject.PositionX = transformContainer.getOrigin().x();
-     publish_CarMessageObject.PositionY = transformContainer.getOrigin().y();
-     //seems to get the right information
-     //ROS_INFO("Current position: (%f, %f, )\n", xPos,yPos);
-   }
-   catch(tf::TransformException &ex)
-   {
-     ROS_ERROR("%s", ex.what());
-     ros::Duration(1.0).sleep();
-   }
+  if(Teilnehmertyp == "Fahrzeug")//nur relevant, wenn die Position verändert wird
+  {
 
+      //Routine to get current position, and update the object
+      positionListener.waitForTransform("/map", "/base_footprint", ros::Time(0), ros::Duration(10.0));
+      //tf::StampedTransform transformContainer;
+      try
+       {
+         positionListener.lookupTransform("/map", "/base_footprint",
+                                   ros::Time(0), transformContainer);
+         publish_CarMessageObject.PositionX = transformContainer.getOrigin().x();
+         publish_CarMessageObject.PositionY = transformContainer.getOrigin().y();
+         //seems to get the right information
+         //ROS_INFO("Current position: (%f, %f, )\n", xPos,yPos);
+       }
+       catch(tf::TransformException &ex)
+       {
+         ROS_ERROR("%s", ex.what());
+         ros::Duration(1.0).sleep();
+       }
+
+  }
+  //Szenario1 das eigene Fahrzeug ist defekt
   //geht bestimmt auch über define...
   if((timer>100)&&rescueScenario&& !(alreadyPublished))
   {
@@ -180,7 +196,7 @@ int main (int argc, char **argv){
   };
   ++timer;
 
-  //rescuevehicle
+  //Szenario1 Das folgende Fahrzeug eilt zur Hilfe
   if((subscribe_CarMessageObject.Nachrichtentyp == "SOS") && !(alreadyPublished))
   {
     publish_CarMessageObject.Nachrichtentyp = "Ambulance";
@@ -196,6 +212,7 @@ int main (int argc, char **argv){
     ROS_INFO("Just send a message to rescue another vehicle");
 
   };
+
 
 
   //adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "mambo_jambo");
