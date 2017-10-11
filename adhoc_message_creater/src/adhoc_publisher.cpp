@@ -223,6 +223,8 @@ int main (int argc, char **argv){
           reactionObject.message_type = subscribe_CarMessageObject.Nachrichtentyp;
           reactionObject.source = subscribe_CarMessageObject.limit_tag;
           reactionObject.attributeA = subscribe_CarMessageObject.speedLimit;
+          ROS_INFO("Heard a speedlimiter and parse attributes into local messages");
+          adhoc_to_cruise_publisher.publish(reactionObject);
 
    }
 
