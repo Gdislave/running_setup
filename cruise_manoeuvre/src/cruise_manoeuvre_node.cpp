@@ -14,11 +14,13 @@ void adhoc_cmd_callback(const scenario_handler::adhoc_reaction::ConstPtr &adhoc_
      scenario_handler::adhoc_reaction *adhoc_reaction)
   {
             *adhoc_reaction = *adhoc_reaction_msg;
+  /*
             adhoc_reaction->message_type = adhoc_reaction_msg->message_type;
             adhoc_reaction->messagenumber = adhoc_reaction_msg->messagenumber;
             adhoc_reaction->position.x = adhoc_reaction_msg->position.x;
             adhoc_reaction->position.y = adhoc_reaction_msg->position.y;
             adhoc_reaction->position.z = adhoc_reaction_msg->position.z;
+  */
   }
 
 void switchGoal(move_base_msgs::MoveBaseGoal &goal,int &counter ,double array_of_goals[9][7]){
@@ -206,7 +208,7 @@ while(ros::ok()){
 
   //RSU-Handling , approach of speed limiter
   /*
-  if(RSU){
+  if(adhoc_publisherToCruiser_object.Teil == ){
   //Falls ein Signal von einer RSU bekommen, eigene Position bestimmen. Gespeichert in positionListener
   positionListener.waitForTransform("/map", "/base_footprint", ros::Time(0), ros::Duration(10.0));
   tf::StampedTransform transform;
