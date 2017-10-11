@@ -12,4 +12,4 @@ string AmpelState
 uint8 SOSgettingHelpBoolean
 
 string limit_tag
-uint8 speedLimit
+float32 speedLimit
