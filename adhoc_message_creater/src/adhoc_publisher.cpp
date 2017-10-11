@@ -80,10 +80,10 @@ void car2car_standard_callback(const adhoc_customize::Car2Car::ConstPtr& Car2Car
 void car2car_simple_callback(const adhoc_customize::Car2Car::ConstPtr& Car2CarMsgR_rcvd)
   {
 
-      ROS_INFO("I've heard something.");
+      //ROS_INFO("I've heard something.");
       subscribe_CarMessageObject = *Car2CarMsgR_rcvd;
 
-}
+  }
 
 
 
@@ -126,7 +126,7 @@ int main (int argc, char **argv){
 
       publish_CarMessageObject.Teilnehmertyp0Fahrzeug1RSU = 1;
       publish_CarMessageObject.Teilnehmername = std::string("RSU1");
-      publish_CarMessageObject.Nachrichtentyp = std::string("limit");
+      publish_CarMessageObject.Nachrichtentyp = std::string("speedlimit");
       publish_CarMessageObject.PositionX = 12;
       publish_CarMessageObject.PositionY = -2;
       publish_CarMessageObject.limit_tag = "HollywoodHills";
@@ -199,20 +199,32 @@ int main (int argc, char **argv){
   //Szenario1 Das folgende Fahrzeug eilt zur Hilfe
   if((subscribe_CarMessageObject.Nachrichtentyp == "SOS") && !(alreadyPublished))
   {
-    publish_CarMessageObject.Nachrichtentyp = "Ambulance";
+          publish_CarMessageObject.Nachrichtentyp = "Ambulance";
 
-    reactionObject.message_type = std::string("Ambulance");
-    reactionObject.position.x = subscribe_CarMessageObject.PositionX;
-    reactionObject.position.y = subscribe_CarMessageObject.PositionY;
-    reactionObject.source = subscribe_CarMessageObject.Teilnehmername;
-    dst_car = subscribe_CarMessageObject.Teilnehmername;
+          reactionObject.message_type = std::string("Ambulance");
+          reactionObject.position.x = subscribe_CarMessageObject.PositionX;
+          reactionObject.position.y = subscribe_CarMessageObject.PositionY;
+          reactionObject.source = subscribe_CarMessageObject.Teilnehmername;
+          dst_car = subscribe_CarMessageObject.Teilnehmername;
 
-    adhoc_to_cruise_publisher.publish(reactionObject);
-    alreadyPublished = true;
-    ROS_INFO("Just send a message to rescue another vehicle");
+          adhoc_to_cruise_publisher.publish(reactionObject);
+          alreadyPublished = true;
+          ROS_INFO("Just send a message to rescue another vehicle");
 
   };
 
+  if((subscribe_CarMessageObject.Teilnehmertyp0Fahrzeug1RSU == 1) &&
+     (subscribe_CarMessageObject.Nachrichtentyp == "limit"))
+  {
+          reactionObject.position.x = subscribe_CarMessageObject.PositionX;
+          reactionObject.position.y = subscribe_CarMessageObject.PositionY;
+          reactionObject.second_position.x = subscribe_CarMessageObject.PositionX+3;
+          reactionObject.second_position.y = subscribe_CarMessageObject.PositionY-5;
+          reactionObject.message_type = subscribe_CarMessageObject.Nachrichtentyp;
+          reactionObject.source = subscribe_CarMessageObject.limit_tag;
+          reactionObject.attributeA = subscribe_CarMessageObject.speedLimit;
+
+   }
 
 
   //adhoc_communication::sendMessage(rectangle, FRAME_DATA_TYPE_RECTANGLE, dst_car, "mambo_jambo");
