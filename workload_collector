@@ -9,7 +9,7 @@
 #top -b -n1 | grep -i Cpu >> top.txt   
 #STR=""
 
-Workload=$(top -n1 -b | grep -i -o -P ".{0,5}id,.{0,0}") 
+Workload=$(top -n1 | grep -i -o -P ".{0,5}id,.{0,0}") 
 timestamp=$(date | grep -i -o -P ".{0,0}Okt.{0,9}")
 # der jeweilige Output muss editiert werden um es per cron
 # auf den Systemen laufen zu lassen
